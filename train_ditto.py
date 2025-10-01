@@ -1,3 +1,9 @@
+import warnings
+warnings.filterwarnings("ignore")
+
+import nltk
+nltk.download('stopwords')
+
 import os
 import argparse
 import json

@@ -16,7 +16,10 @@ For more technical details, see the [Deep Entity Matching with Pre-Trained Langu
 
 Install required packages
 ```
+conda create -n ditto python=3.7.7
+conda activate ditto
 conda install -c conda-forge nvidia-apex
+pip install torch==1.9.0+cu111 -f https://download.pytorch.org/whl/torch_stable.html
 pip install -r requirements.txt
 python -m spacy download en_core_web_lg
 ```
@@ -104,3 +107,17 @@ where ``--task`` is the task name, ``--input_path`` is the input file of the can
 ## Colab notebook
 
 You can also run training and prediction using this colab [notebook](https://colab.research.google.com/drive/1eyQbockBSxxQ_tuW5F1XKyeVOM1HT_Ro?usp=sharing).
+
+# Commands to Run
+
+## Dataset DBLP-ACM:
+
+tain: `python train_ditto.py --task Structured/DBLP-ACM --batch_size 32 --max_len 128 --lr 3e-5 --n_epochs 20 --finetuning --lm roberta --fp16 --da drop_col`
+
+match: `python matcher.py --task wdc_all_small --input_path input/input_small.jsonl --output_path output/output_small.jsonl --lm distilbert --max_len 64 --use_gpu --fp16 --checkpoint_path checkpoints/`
+
+## Dataset Abt-Buy:
+
+train: `python train_ditto.py --task Textual/Abt-Buy --batch_size 32 --max_len 64 --lr 3e-5 --n_epochs 20 --finetuning --lm roberta --fp16 --da drop_col`
+
+match: `python matcher.py --task Textual/Abt-Buy --input_path input/input_small.jsonl --output_path output/output_small.jsonl --lm distilbert --max_len 64 --use_gpu --fp16 --checkpoint_path checkpoints/`

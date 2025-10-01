@@ -140,7 +140,7 @@ def train_step(train_iter, model, optimizer, scheduler, hp):
         optimizer.step()
         scheduler.step()
         if i % 10 == 0: # monitoring
-            print(f"step: {i}, loss: {loss.item()}")
+            print(f"step: {i}, loss: {loss.item():.4f}")
         del loss
 
 
@@ -222,7 +222,7 @@ def train(trainset, validset, testset, run_tag, hp):
                         'epoch': epoch}
                 torch.save(ckpt, ckpt_path)
 
-        print(f"epoch {epoch}: dev_f1={dev_f1}, f1={test_f1}, best_f1={best_test_f1}")
+        print(f"epoch {epoch}: dev_f1={dev_f1:.4f}, f1={test_f1:.4f}, best_f1={best_test_f1:.4f}\n")
 
         # logging
         scalars = {'f1': dev_f1,
