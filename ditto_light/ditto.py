@@ -196,6 +196,7 @@ def train(trainset, validset, testset, run_tag, hp):
 
     best_dev_f1 = best_test_f1 = 0.0
     for epoch in range(1, hp.n_epochs+1):
+        print()
         # train
         model.train()
         train_step(train_iter, model, optimizer, scheduler, hp)
@@ -222,7 +223,7 @@ def train(trainset, validset, testset, run_tag, hp):
                         'epoch': epoch}
                 torch.save(ckpt, ckpt_path)
 
-        print(f"epoch {epoch}: dev_f1={dev_f1:.4f}, f1={test_f1:.4f}, best_f1={best_test_f1:.4f}\n")
+        print(f"epoch {epoch}: dev_f1={dev_f1:.4f}, f1={test_f1:.4f}, best_f1={best_test_f1:.4f}")
 
         # logging
         scalars = {'f1': dev_f1,

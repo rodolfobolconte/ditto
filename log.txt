@@ -1,0 +1,6 @@
+Textual/Abt-Buy_lm=roberta_dk=False_su=False 8.412024 
+Textual/Abt-Buy_lm=roberta_dk=False_su=False 19.440548 
+Textual/Abt-Buy_lm=roberta_dk=False_su=False 8.568084 
+Textual/Abt-Buy_lm=roberta_dk=False_su=False 20.037523 
+Textual/Abt-Buy_lm=roberta_dk=False_su=False 8.770755 
+Textual/Abt-Buy_lm=roberta_dk=False_su=False 8.943401 

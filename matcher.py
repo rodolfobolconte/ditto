@@ -169,8 +169,7 @@ def predict(input_path, output_path, config,
 
     # batch processing
     start_time = time.time()
-    with jsonlines.open(input_path) as reader,\
-         jsonlines.open(output_path, mode='w') as writer:
+    with jsonlines.open(input_path) as reader, jsonlines.open(output_path, mode='w') as writer:
         pairs = []
         rows = []
         for idx, row in tqdm(enumerate(reader)):
@@ -239,7 +238,8 @@ def tune_threshold(config, model, hp):
     with jsonlines.open("tmp.jsonl", mode="r") as reader:
         for line in reader:
             predicts.append(int(line['match']))
-    os.system("rm tmp.jsonl")
+    if os.path.exists("tmp.jsonl"):
+        os.remove("tmp.jsonl")
 
     labels = []
     with open(validset) as fin:
