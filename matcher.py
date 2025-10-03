@@ -142,9 +142,13 @@ def predict(input_path, output_path, config,
     pairs = []
 
     def process_batch(rows, pairs, writer):
-        predictions, logits = classify(pairs, model, lm=lm,
-                                       max_len=max_len,
-                                       threshold=threshold)
+        predictions, logits = classify(
+            pairs,
+            model,
+            lm=lm,
+            max_len=max_len,
+            threshold=threshold,
+        )
         # try:
         #     predictions, logits = classify(pairs, model, lm=lm,
         #                                    max_len=max_len,
@@ -154,17 +158,24 @@ def predict(input_path, output_path, config,
         #     return
         scores = softmax(logits, axis=1)
         for row, pred, score in zip(rows, predictions, scores):
-            output = {'left': row[0], 'right': row[1],
+            row_result = {
+                'left': row[0],
+                'right': row[1],
+                'label': int(row[2]),
                 'match': pred,
-                'match_confidence': score[int(pred)]}
-            writer.write(output)
-
+                'match_confidence': score[int(pred)]
+            }
+            writer.write(row_result)
+# 
     # input_path can also be train/valid/test.txt
     # convert to jsonlines
     if '.txt' in input_path:
         with jsonlines.open(input_path + '.jsonl', mode='w') as writer:
             for line in open(input_path):
-                writer.write(line.split('\t')[:2])
+                line_list = line.split('\t')
+                line_list[2] = line_list[2].replace('\n', '')
+                writer.write(line_list)
+                # writer.write(line.split('\t')[:2])
         input_path += '.jsonl'
 
     # batch processing
