@@ -1,3 +1,5 @@
+# cls ; python matcher.py --task Textual/Abt-Buy --input_path data/er_magellan/Textual/Abt-Buy/test.txt --output_path output/output_small.jsonl --lm roberta --max_len 64 --use_gpu --fp16 --checkpoint_path checkpoints/
+
 import torch
 import torch.nn as nn
 import os
@@ -87,9 +89,11 @@ def classify(sentence_pairs, model,
     """
     inputs = sentence_pairs
     # print('max_len =', max_len)
-    dataset = DittoDataset(inputs,
-                           max_len=max_len,
-                           lm=lm)
+    dataset = DittoDataset(
+        inputs,
+        max_len=max_len,
+        lm=lm
+    )
     # print(dataset[0])
     iterator = data.DataLoader(dataset=dataset,
                                batch_size=len(dataset),
@@ -115,14 +119,18 @@ def classify(sentence_pairs, model,
     pred = [1 if p > threshold else 0 for p in all_probs]
     return pred, all_logits
 
-def predict(input_path, output_path, config,
-            model,
-            batch_size=1024,
-            summarizer=None,
-            lm='distilbert',
-            max_len=256,
-            dk_injector=None,
-            threshold=None):
+def predict(
+    input_path,
+    output_path,
+    config,
+    model,
+    batch_size=1024,
+    summarizer=None,
+    lm='distilbert',
+    max_len=256,
+    dk_injector=None,
+    threshold=None
+):
     """Run the model over the input file containing the candidate entry pairs
 
     Args:
@@ -166,7 +174,7 @@ def predict(input_path, output_path, config,
                 'match_confidence': score[int(pred)]
             }
             writer.write(row_result)
-# 
+
     # input_path can also be train/valid/test.txt
     # convert to jsonlines
     if '.txt' in input_path:
@@ -335,13 +343,18 @@ if __name__ == "__main__":
         else:
             dk_injector = GeneralDKInjector(config, hp.dk)
 
-    # tune threshold
+    tune threshold
     threshold = tune_threshold(config, model, hp)
 
     # run prediction
-    predict(hp.input_path, hp.output_path, config, model,
-            summarizer=summarizer,
-            max_len=hp.max_len,
-            lm=hp.lm,
-            dk_injector=dk_injector,
-            threshold=threshold)
+    predict(
+        hp.input_path,
+        hp.output_path,
+        config,
+        model,
+        summarizer=summarizer,
+        max_len=hp.max_len,
+        lm=hp.lm,
+        dk_injector=dk_injector,
+        threshold=threshold
+    )

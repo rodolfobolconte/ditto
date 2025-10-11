@@ -92,7 +92,11 @@ if __name__=="__main__":
     test_dataset = DittoDataset(testset, lm=hp.lm)
 
     # train and evaluate the model
-    train(train_dataset,
-          valid_dataset,
-          test_dataset,
-          run_tag, hp)
+    train(
+        train_dataset,
+        valid_dataset,
+        test_dataset,
+        run_tag,
+        hp,
+        testset,
+    )

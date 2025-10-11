@@ -6,6 +6,7 @@ import torch.nn.functional as F
 import torch.optim as optim
 import random
 import numpy as np
+import pandas as pd
 import sklearn.metrics as metrics
 import argparse
 
@@ -63,7 +64,21 @@ class DittoModel(nn.Module):
         return self.fc(enc) # .squeeze() # .sigmoid()
 
 
-def evaluate(model, iterator, threshold=None):
+def create_output(y_true, y_pred, all_probs, testset_path):
+    lines = open(testset_path)
+    df = []
+    for line in lines:
+        s1, s2, label = line.strip().split('\t')
+        df.append({'left': s1, 'right': s2, 'label': int(label)})
+
+    df = pd.DataFrame(df)
+    df['match'] = y_pred
+    df['match_confidence'] = all_probs
+
+    df.to_json('output/train_output.jsonl', orient='records', lines=True)
+
+
+def evaluate(model, iterator, threshold=None, testset_path=None):
     """Evaluate a model on a validation/test dataset
 
     Args:
@@ -90,6 +105,11 @@ def evaluate(model, iterator, threshold=None):
     if threshold is not None:
         pred = [1 if p > threshold else 0 for p in all_probs]
         f1 = metrics.f1_score(all_y, pred)
+
+        print()
+        print(metrics.classification_report(all_y, pred, zero_division=0, digits=4))
+        create_output(all_y, pred, all_probs, testset_path)
+
         return f1
     else:
         best_th = 0.5
@@ -144,7 +164,7 @@ def train_step(train_iter, model, optimizer, scheduler, hp):
         del loss
 
 
-def train(trainset, validset, testset, run_tag, hp):
+def train(trainset, validset, testset, run_tag, hp, testset_path):
     """Train and evaluate the model
 
     Args:
@@ -204,7 +224,7 @@ def train(trainset, validset, testset, run_tag, hp):
         # eval
         model.eval()
         dev_f1, th = evaluate(model, valid_iter)
-        test_f1 = evaluate(model, test_iter, threshold=th)
+        test_f1 = evaluate(model, test_iter, threshold=th, testset_path=testset_path)
 
         if dev_f1 > best_dev_f1:
             best_dev_f1 = dev_f1
