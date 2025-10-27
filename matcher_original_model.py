@@ -75,6 +75,7 @@ def model_evaluate(model, test_iter, threshold=.5):
 
     y_pred = [1 if p > threshold else 0 for p in all_probs]
 
+    print()
     print(metrics.classification_report(y_true, y_pred, zero_division=0, digits=4))
 
     return y_true, y_pred, all_probs
