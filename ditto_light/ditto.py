@@ -75,7 +75,9 @@ def create_output(y_true, y_pred, all_probs, testset_path):
     df['match'] = y_pred
     df['match_confidence'] = all_probs
 
-    df.to_json('output/train_output.jsonl', orient='records', lines=True)
+    output_filename = testset_path.split('/')[-2]
+
+    df.to_json(f'output/{output_filename}-output.jsonl', orient='records', lines=True)
 
 
 def evaluate(model, iterator, threshold=None, testset_path=None):
@@ -108,9 +110,8 @@ def evaluate(model, iterator, threshold=None, testset_path=None):
 
         print()
         print(metrics.classification_report(all_y, pred, zero_division=0, digits=4))
-        create_output(all_y, pred, all_probs, testset_path)
 
-        return f1
+        return f1, all_y, pred, all_probs, testset_path
     else:
         best_th = 0.5
         f1 = 0.0 # metrics.f1_score(all_y, all_p)
@@ -191,7 +192,8 @@ def train(trainset, validset, testset, run_tag, hp, testset_path):
                                  num_workers=0,
                                  collate_fn=padder)
     test_iter = data.DataLoader(dataset=testset,
-                                 batch_size=hp.batch_size*16,
+                                 batch_size=int(len(testset)/4),
+                                #  batch_size=hp.batch_size*16,
                                  shuffle=False,
                                  num_workers=0,
                                  collate_fn=padder)
@@ -223,13 +225,17 @@ def train(trainset, validset, testset, run_tag, hp, testset_path):
 
         # eval
         model.eval()
+        print(f"Evaluating with ValidSet...")
         dev_f1, th = evaluate(model, valid_iter)
-        test_f1 = evaluate(model, test_iter, threshold=th, testset_path=testset_path)
+        print(f"Evaluating with TestSet...")
+        test_f1, all_y, pred, all_probs, testset_path = evaluate(model, test_iter, threshold=th, testset_path=testset_path)
 
         if dev_f1 > best_dev_f1:
             best_dev_f1 = dev_f1
             best_test_f1 = test_f1
             if hp.save_model:
+                print('Saving the model...')
+                create_output(all_y, pred, all_probs, testset_path)
                 # create the directory if not exist
                 directory = os.path.join(hp.logdir, hp.task)
                 if not os.path.exists(directory):
@@ -242,6 +248,7 @@ def train(trainset, validset, testset, run_tag, hp, testset_path):
                         'scheduler': scheduler.state_dict(),
                         'epoch': epoch}
                 torch.save(ckpt, ckpt_path)
+                # torch.save(model, ckpt_path)
 
         print(f"epoch {epoch}: dev_f1={dev_f1:.4f}, f1={test_f1:.4f}, best_f1={best_test_f1:.4f}")
 

@@ -302,10 +302,10 @@ def load_model(task, path, lm, use_gpu, fp16=True):
     else:
         device = 'cpu'
 
-    model = DittoModel(device=device, lm=lm)
-
-    saved_state = torch.load(checkpoint, map_location=lambda storage, loc: storage)
-    model.load_state_dict(saved_state['model'])
+    # model = DittoModel(device=device, lm=lm)
+    # saved_state = torch.load(checkpoint, map_location=lambda storage, loc: storage)
+    # model.load_state_dict(saved_state['model'])
+    model = torch.load(checkpoint)
     model = model.to(device)
 
     if fp16 and 'cuda' in device:
@@ -343,7 +343,7 @@ if __name__ == "__main__":
         else:
             dk_injector = GeneralDKInjector(config, hp.dk)
 
-    tune threshold
+    # tune threshold
     threshold = tune_threshold(config, model, hp)
 
     # run prediction
