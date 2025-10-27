@@ -87,3 +87,25 @@ match: `cls ; python matcher.py --task Textual/Abt-Buy --input_path data/er_mage
 ### Walmart-Amazon
 
 train: `cls ; python train_ditto.py --task Structured/Walmart-Amazon --batch_size 32 --max_len 64 --lr 3e-5 --n_epochs 20 --lm roberta --fp16 --da drop_col --save_model`
+
+### Amazon-Google
+
+train: `cls ; python train_ditto.py --task Structured/Amazon-Google --batch_size 32 --max_len 64 --lr 3e-5 --n_epochs 20 --lm roberta --fp16 --da drop_col --save_model`
+
+### DBLP-ACM
+
+train: `cls ; python train_ditto.py --task Structured/DBLP-ACM --batch_size 32 --max_len 64 --lr 3e-5 --n_epochs 20 --lm roberta --fp16 --da drop_col --save_model`
+
+### DBLP-GoogleScholar
+
+TA COM ERRO
+train: `cls ; python train_ditto.py --task Structured/DBLP-GoogleScholar --batch_size 32 --max_len 64 --lr 3e-5 --n_epochs 20 --lm roberta --fp16 --da drop_col --save_model`
+
+### Fodors-Zagats
+
+train: `cls ; python train_ditto.py --task Structured/Fodors-Zagats --batch_size 32 --max_len 64 --lr 3e-5 --n_epochs 20 --lm roberta --fp16 --da drop_col --save_model`
+
+### iTunes-Amazon
+
+TA COM ERRO
+train: `cls ; python train_ditto.py --task Structured/iTunes-Amazon --batch_size 32 --max_len 64 --lr 3e-5 --n_epochs 20 --lm roberta --fp16 --da drop_col --save_model`

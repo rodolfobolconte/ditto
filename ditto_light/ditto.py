@@ -217,6 +217,7 @@ def train(trainset, validset, testset, run_tag, hp, testset_path):
     writer = SummaryWriter(log_dir=hp.logdir)
 
     best_dev_f1 = 0.0
+    best_dev_th = 0.0
     best_test_f1 = 0.0
     for epoch in range(1, hp.n_epochs+1):
         print()
@@ -233,6 +234,7 @@ def train(trainset, validset, testset, run_tag, hp, testset_path):
 
         if dev_f1 > best_dev_f1:
             best_dev_f1 = dev_f1
+            best_dev_th = th
             best_test_f1 = test_f1
             if hp.save_model:
                 print('Saving the model...')
@@ -251,8 +253,8 @@ def train(trainset, validset, testset, run_tag, hp, testset_path):
                 torch.save(ckpt, ckpt_path)
                 # torch.save(model, ckpt_path)
 
-        print(f"epoch {epoch}:")
-        print(f"  validset_f1={dev_f1:.4f}, validset_best_f1={best_dev_f1:.4f}")
+        print(f"\nepoch {epoch}:")
+        print(f"  validset_f1={dev_f1:.4f}, validset_best_f1={best_dev_f1:.4f}, validset_best_th={best_dev_th}")
         print(f"  testset_f1={test_f1:.4f}, testset_best_test_f1={best_test_f1:.4f}")
 
         # logging
