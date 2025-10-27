@@ -108,7 +108,7 @@ def evaluate(model, iterator, threshold=None, testset_path=None):
         pred = [1 if p > threshold else 0 for p in all_probs]
         f1 = metrics.f1_score(all_y, pred)
 
-        print()
+        print("\nTestSet Classification Report:")
         print(metrics.classification_report(all_y, pred, zero_division=0, digits=4))
 
         return f1, all_y, pred, all_probs, testset_path
@@ -216,7 +216,8 @@ def train(trainset, validset, testset, run_tag, hp, testset_path):
     # logging with tensorboardX
     writer = SummaryWriter(log_dir=hp.logdir)
 
-    best_dev_f1 = best_test_f1 = 0.0
+    best_dev_f1 = 0.0
+    best_test_f1 = 0.0
     for epoch in range(1, hp.n_epochs+1):
         print()
         # train
@@ -225,9 +226,9 @@ def train(trainset, validset, testset, run_tag, hp, testset_path):
 
         # eval
         model.eval()
-        print(f"Evaluating with ValidSet...")
+        print(f"\nEvaluating with ValidSet...")
         dev_f1, th = evaluate(model, valid_iter)
-        print(f"Evaluating with TestSet...")
+        print(f"\nEvaluating with TestSet...")
         test_f1, all_y, pred, all_probs, testset_path = evaluate(model, test_iter, threshold=th, testset_path=testset_path)
 
         if dev_f1 > best_dev_f1:
@@ -250,7 +251,9 @@ def train(trainset, validset, testset, run_tag, hp, testset_path):
                 torch.save(ckpt, ckpt_path)
                 # torch.save(model, ckpt_path)
 
-        print(f"epoch {epoch}: dev_f1={dev_f1:.4f}, f1={test_f1:.4f}, best_f1={best_test_f1:.4f}")
+        print(f"epoch {epoch}:")
+        print(f"  validset_f1={dev_f1:.4f}, validset_best_f1={best_dev_f1:.4f}")
+        print(f"  testset_f1={test_f1:.4f}, testset_best_test_f1={best_test_f1:.4f}")
 
         # logging
         scalars = {'f1': dev_f1,

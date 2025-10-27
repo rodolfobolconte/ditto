@@ -70,10 +70,20 @@ else:
 
 This error occurs because the version of cuda in the if statement, so you can change 0 by 1 in the if.
 
-## 6 - Command to run Ditto
+## 6 - Commands to run Ditto
 
 You can run the train step with this command:
 
 `python train_ditto.py --task Structured/DBLP-ACM --batch_size 32 --max_len 128 --lr 3e-5 --n_epochs 20 --finetuning --lm roberta --fp16 --da drop_col`
 
 `python train_ditto.py --task Textual/Abt-Buy --batch_size 32 --max_len 128 --lr 3e-5 --n_epochs 20 --finetuning --lm roberta --fp16 --da drop_col`
+
+### Abt-Buy
+
+train: `cls ; python train_ditto.py --task Textual/Abt-Buy --batch_size 32 --max_len 64 --lr 3e-5 --n_epochs 20 --lm roberta --fp16 --da drop_col --save_model`
+
+match: `cls ; python matcher.py --task Textual/Abt-Buy --input_path data/er_magellan/Textual/Abt-Buy/test.txt --output_path output/output_small.jsonl --lm roberta --max_len 64 --use_gpu --fp16 --checkpoint_path checkpoints/`
+
+### Walmart-Amazon
+
+train: `cls ; python train_ditto.py --task Structured/Walmart-Amazon --batch_size 32 --max_len 64 --lr 3e-5 --n_epochs 20 --lm roberta --fp16 --da drop_col --save_model`
