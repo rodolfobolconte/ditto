@@ -248,6 +248,14 @@ def train(trainset, validset, testset, run_tag, hp, testset_path):
                 if not os.path.exists(directory):
                     os.makedirs(directory)
 
+                # remove previous checkpoints
+                folder_to_remove_models = os.path.join(hp.logdir, hp.task)
+                for file_name in os.listdir(folder_to_remove_models):
+                    if task_name in file_name:
+                        file_path = os.path.join(folder_to_remove_models, file_name)
+                        if os.path.isfile(file_path):
+                            os.remove(file_path)
+
                 # save the checkpoints for each component
                 ckpt_path = os.path.join(hp.logdir, hp.task, f'{task_name}-epoch-{epoch}-f1-{dev_f1:.4f}-threshold-{th:.2f}.pt')
                 ckpt = {'model': model.state_dict(),
