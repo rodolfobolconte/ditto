@@ -39,7 +39,7 @@ After that, install torch out of requirements and after that, install the requir
 
 ```
 pip install torch==1.9.0+cu111 -f https://download.pytorch.org/whl/torch_stable.html
-pip install -r requirements.txt
+pip install -r requirements.txt --no-cache-dir
 ```
 
 ## 4 - Error in Code
