@@ -98,5 +98,5 @@ if __name__=="__main__":
         test_dataset,
         run_tag,
         hp,
-        testset,
+        testset
     )

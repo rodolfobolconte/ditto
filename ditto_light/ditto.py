@@ -179,6 +179,9 @@ def train(trainset, validset, testset, run_tag, hp, testset_path):
     Returns:
         None
     """
+
+    task_name = hp.task.replace('/', '-').lower()
+
     padder = trainset.pad
     # create the DataLoaders
     train_iter = data.DataLoader(dataset=trainset,
@@ -229,6 +232,7 @@ def train(trainset, validset, testset, run_tag, hp, testset_path):
         model.eval()
         print(f"\nEvaluating with ValidSet...")
         dev_f1, th = evaluate(model, valid_iter)
+        print(f'\tF1-Score: {dev_f1:.4f} - Threshold: {th:.2f}')
         print(f"\nEvaluating with TestSet...")
         test_f1, all_y, pred, all_probs, testset_path = evaluate(model, test_iter, threshold=th, testset_path=testset_path)
 
@@ -245,13 +249,12 @@ def train(trainset, validset, testset, run_tag, hp, testset_path):
                     os.makedirs(directory)
 
                 # save the checkpoints for each component
-                ckpt_path = os.path.join(hp.logdir, hp.task, 'model.pt')
+                ckpt_path = os.path.join(hp.logdir, hp.task, f'{task_name}-epoch-{epoch}-f1-{dev_f1:.4f}-threshold-{th:.2f}.pt')
                 ckpt = {'model': model.state_dict(),
                         'optimizer': optimizer.state_dict(),
                         'scheduler': scheduler.state_dict(),
                         'epoch': epoch}
                 torch.save(ckpt, ckpt_path)
-                # torch.save(model, ckpt_path)
 
         print(f"\nepoch {epoch}:")
         print(f"  validset_f1={dev_f1:.4f}, validset_best_f1={best_dev_f1:.4f}, validset_best_th={best_dev_th}")
