@@ -6,13 +6,15 @@ from ditto_light.summarize import Summarizer
 from ditto_light.ditto import evaluate, DittoModel
 from ditto_light.dataset import DittoDataset
 import json
+import os
 import pandas as pd
 import sklearn.metrics as metrics
 import torch
 
 lm = "roberta"
 DATASET_PATH = "Textual/Abt-Buy"
-model_file_path = rf"checkpoints\{DATASET_PATH}\model.pt"
+files = os.listdir(rf"checkpoints\{DATASET_PATH}")
+model_file_path = os.path.join(rf"checkpoints\{DATASET_PATH}", files[0])
 dataset_file_path = f"data/er_magellan/{DATASET_PATH}"
 trainset_path = f"{dataset_file_path}/train.txt"
 testset_path = f"{dataset_file_path}/test.txt"
@@ -80,8 +82,13 @@ def model_evaluate(model, test_iter, threshold=.5):
 
     return y_true, y_pred, all_probs
 
+threshold = float(model_file_path.split('-')[-1].replace('.pt',''))
 
-y_true, y_pred, all_probs = model_evaluate(model, test_iter)
+y_true, y_pred, all_probs = model_evaluate(
+    model,
+    test_iter,
+    0.9,
+)
 
 
 def create_output(y_true, y_pred, all_probs, testset_path):
