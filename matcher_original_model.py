@@ -15,9 +15,11 @@ lm = "roberta"
 DATASET_PATH = "Textual/Abt-Buy"
 files = os.listdir(rf"checkpoints\{DATASET_PATH}")
 model_file_path = os.path.join(rf"checkpoints\{DATASET_PATH}", files[0])
+threshold = float(model_file_path.split('-')[-1].replace('.pt',''))
 dataset_file_path = f"data/er_magellan/{DATASET_PATH}"
 trainset_path = f"{dataset_file_path}/train.txt"
 testset_path = f"{dataset_file_path}/test.txt"
+
 
 def load_testset():
 
@@ -62,7 +64,7 @@ model.load_state_dict(saved_state['model'])
 model.to(device)
 
 
-def model_evaluate(model, test_iter, threshold=.5):
+def model_evaluate(model, test_iter, threshold):
     all_p = []
     y_true = []
     all_probs = []
@@ -82,12 +84,11 @@ def model_evaluate(model, test_iter, threshold=.5):
 
     return y_true, y_pred, all_probs
 
-threshold = float(model_file_path.split('-')[-1].replace('.pt',''))
 
 y_true, y_pred, all_probs = model_evaluate(
     model,
     test_iter,
-    0.9,
+    threshold,
 )
 
 
