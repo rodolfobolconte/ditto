@@ -2,6 +2,7 @@
 
 from torch.utils import data
 from transformers import AutoTokenizer
+from datetime import datetime
 from ditto_light.summarize import Summarizer
 from ditto_light.ditto import evaluate, DittoModel
 from ditto_light.dataset import DittoDataset
@@ -50,11 +51,12 @@ def load_testset():
         collate_fn=padder,
     )
 
-    return test_iter
+    test_len = len(test_dataset)
+
+    return test_iter, test_len
 
 
-test_iter = load_testset()
-
+test_iter, test_len = load_testset()
 
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
 
@@ -84,13 +86,13 @@ def model_evaluate(model, test_iter, threshold):
 
     return y_true, y_pred, all_probs
 
-
+test_start_time = datetime.now()
 y_true, y_pred, all_probs = model_evaluate(
     model,
     test_iter,
     threshold,
 )
-
+test_end_time = datetime.now()
 
 def create_output(y_true, y_pred, all_probs, testset_path):
     lines = open(testset_path)
@@ -108,3 +110,17 @@ def create_output(y_true, y_pred, all_probs, testset_path):
     df.to_json(f'output/{output_filename}-output.jsonl', orient='records', lines=True)
 
 create_output(y_true, y_pred, all_probs, testset_path)
+
+runtime_filepath = r'C:\Users\rodolfo\Documents\llm-tests\runtime-executions.csv'
+df_runtime = pd.read_csv(runtime_filepath)
+runtime_row = {
+    'datetime': datetime.now(),
+    'model': 'ditto',
+    'dataset_name': DATASET_PATH.split('/')[-1].lower(),
+    'dataset_rows': test_len,
+    'step': 'test',
+    'runtime': test_end_time-test_start_time,
+    'runtime_per_sample': (test_end_time-test_start_time)/(test_len),
+}
+df_runtime.loc[len(df_runtime)] = runtime_row
+df_runtime.to_csv(runtime_filepath, index=False)

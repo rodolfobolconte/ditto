@@ -282,8 +282,8 @@ def train(trainset, validset, testset, run_tag, hp, testset_path):
     df_runtime = pd.read_csv(runtime_filepath)
     runtime_row = {
         'datetime': datetime.now(),
-        'model': model_name,
-        'dataset_name': dataset.lower(),
+        'model': 'ditto',
+        'dataset_name': hp.task.split('/')[-1].lower(),
         'dataset_rows': len(trainset),
         'step': 'train',
         'runtime': train_end_time-train_start_time,
