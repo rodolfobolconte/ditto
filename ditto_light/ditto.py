@@ -11,6 +11,7 @@ import sklearn.metrics as metrics
 import argparse
 
 from .dataset import DittoDataset
+from datetime import datetime
 from torch.utils import data
 from transformers import AutoModel, AdamW, get_linear_schedule_with_warmup
 from tensorboardX import SummaryWriter
@@ -180,6 +181,8 @@ def train(trainset, validset, testset, run_tag, hp, testset_path):
         None
     """
 
+    train_start_time = datetime.now()
+
     task_name = hp.task.replace('/', '-').lower()
 
     padder = trainset.pad
@@ -272,5 +275,21 @@ def train(trainset, validset, testset, run_tag, hp, testset_path):
         scalars = {'f1': dev_f1,
                    't_f1': test_f1}
         writer.add_scalars(run_tag, scalars, epoch)
+
+    train_end_time = datetime.now()
+
+    runtime_filepath = r'C:\Users\rodolfo\Documents\llm-tests\runtime-executions.csv'
+    df_runtime = pd.read_csv(runtime_filepath)
+    runtime_row = {
+        'datetime': datetime.now(),
+        'model': model_name,
+        'dataset_name': dataset.lower(),
+        'dataset_rows': len(trainset),
+        'step': 'train',
+        'runtime': train_end_time-train_start_time,
+        'runtime_per_sample': (train_end_time-train_start_time)/(len(trainset)),
+    }
+    df_runtime.loc[len(df_runtime)] = runtime_row
+    df_runtime.to_csv(runtime_filepath, index=False)
 
     writer.close()
