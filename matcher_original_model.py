@@ -13,21 +13,22 @@ import sklearn.metrics as metrics
 import torch
 
 lm = "roberta"
-DATASET_PATH = "Textual/Abt-Buy"
-files = os.listdir(rf"checkpoints\{DATASET_PATH}")
-model_file_path = os.path.join(rf"checkpoints\{DATASET_PATH}", files[0])
+# TASK_NAME = "Textual/Abt-Buy"
+TASK_NAME = "Structured/Amazon-Google"
+# TASK_NAME = "Structured/Walmart-Amazon"
+files = os.listdir(rf"checkpoints\{TASK_NAME}")
+model_file_path = os.path.join(rf"checkpoints\{TASK_NAME}", files[0])
 threshold = float(model_file_path.split('-')[-1].replace('.pt',''))
-dataset_file_path = f"data/er_magellan/{DATASET_PATH}"
+dataset_file_path = f"data/er_magellan/{TASK_NAME}"
 trainset_path = f"{dataset_file_path}/train.txt"
 testset_path = f"{dataset_file_path}/test.txt"
 
 
 def load_testset():
 
-    task = "Textual/Abt-Buy"
     configs = json.load(open('configs.json'))
     configs = {conf['name'] : conf for conf in configs}
-    config = configs[task]
+    config = configs[TASK_NAME]
 
     summarizer = Summarizer(config, lm=lm)
 
@@ -116,7 +117,7 @@ df_runtime = pd.read_csv(runtime_filepath)
 runtime_row = {
     'datetime': datetime.now(),
     'model': 'ditto',
-    'dataset_name': DATASET_PATH.split('/')[-1].lower(),
+    'dataset_name': TASK_NAME.split('/')[-1].lower(),
     'dataset_rows': test_len,
     'step': 'test',
     'runtime': test_end_time-test_start_time,
